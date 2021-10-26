@@ -1,6 +1,11 @@
+/**
+   Snakie McSnakeFace - Lcd Driver (impl) Version 1.0
+   Author: Chris Noldus, Copyright 2021
+   Licence: CC w/attribution
+*/
+
 #include "Lcd.h"
 
-//Send a message to the hardware
 void Lcd::send(uint8_t type, uint8_t data) {
   digitalWrite(_DC, type);
   digitalWrite(_SCE, LOW);
@@ -8,7 +13,6 @@ void Lcd::send(uint8_t type, uint8_t data) {
   digitalWrite(_SCE, HIGH);
 }
 
-//Set the current cursor position in the harware
 void Lcd::setCursor(uint8_t column, uint8_t line) {
   column = (column % LCD_WIDTH);
   line = (line % (LCD_HEIGHT / 9 + 1));
@@ -17,6 +21,7 @@ void Lcd::setCursor(uint8_t column, uint8_t line) {
 }
 
 Lcd::Lcd(byte sclk, byte sdin, byte dc, byte res, byte sce) {
+  //Configure pins
   _SCLK = sclk;
   _SDIN = sdin;
   _DC = dc;
@@ -63,10 +68,10 @@ void Lcd::clear() {
 }
 
 void Lcd::printImageFromFlash(const uint8_t *image) {
-  int index = 0;
+  uint16_t index = 0;
   setCursor(0, 0);
-  for (int line = 0; line < 6; line++) {
-    for (int x = 0; x < LCD_WIDTH; x++) {
+  for (uint8_t line = 0; line < 6; line++) {
+    for (uint8_t x = 0; x < LCD_WIDTH; x++) {
       uint8_t val = pgm_read_word_near(image + index++);
       send(PCD8544_DATA, val);
     }
@@ -75,10 +80,10 @@ void Lcd::printImageFromFlash(const uint8_t *image) {
 
 
 void Lcd::printImageFromRam(const uint8_t *image) {
-  int index = 0;
+  uint16_t index = 0;
   setCursor(0, 0);
-  for (int line = 0; line < 6; line++) {
-    for (int x = 0; x < LCD_WIDTH; x++) {
+  for (uint8_t line = 0; line < 6; line++) {
+    for (uint8_t x = 0; x < LCD_WIDTH; x++) {
       uint8_t val = image[index++];
       send(PCD8544_DATA, val);
     }

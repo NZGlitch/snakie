@@ -1,3 +1,9 @@
+/**
+   Snakie McSnakeFace - Button Handler (impl) Version 1.0
+   Author: Chris Noldus, Copyright 2021
+   Licence: CC w/attribution
+*/
+
 #include "Arduino.h"
 #include "Button.h"
 

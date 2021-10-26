@@ -1,3 +1,11 @@
+/**
+   Snakie McSnakeFace - Snake (header) Version 1.0
+   Author: Chris Noldus, Copyright 2021
+   Licence: CC w/attribution
+
+   Represents the actual snake - handles things loke movement & growth
+*/
+
 #ifndef Snake_h
 #define Snake_h
 
@@ -30,6 +38,7 @@ class Segment {
     Segment *next = NULL;  //Next segment
     Segment(uint8_t xPos, uint8_t yPos);
 
+    //Remove the last segment from the snake
     void removeTail();
 };
 
@@ -40,7 +49,7 @@ class Snake {
   public:
     Segment *head;
     uint8_t snakeSize;
-    short currentDir;
+    uint8_t currentDir;
 
 
     //Create a new snake at the given coordinates heading in the given direction

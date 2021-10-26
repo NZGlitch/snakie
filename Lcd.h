@@ -1,6 +1,10 @@
 /**
- Simple display driver for PCD8544 display to be used by snake game
- */
+   Snakie McSnakeFace - Lcd Driver (header) Version 1.0
+   Author: Chris Noldus, Copyright 2021
+   Licence: CC w/attribution
+
+   Simple display driver for PCD8544 display (NOKIA Screen)
+*/
 
 #ifndef Lcd_h
 #define Lcd_h

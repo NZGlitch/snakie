@@ -1,5 +1,9 @@
-/*
-  Snakie.h - A library running a game of SnakieMcSnakeFace
+/**
+   Snakie McSnakeFace - Snakie (header) Version 1.0
+   Author: Chris Noldus, Copyright 2021
+   Licence: CC w/attribution
+
+   The main game class - handles the operation of the game through various states
 */
 
 #ifndef Snakie_h
@@ -8,14 +12,14 @@
 #include "Lcd.h"
 #include "Button.h"
 #include "Snake.h"
-#include "pitches.h"
-#include "Pause.h"
+#include "Pitches.h"
+#include "MusicPlayer.h"
 
 // The target tick time in microseconds - the program will try as much as possible to keep
 // ticks to this exact length, providing consitency in snake speed during the game
+// NOTE - it looks like the current tick length is 25ms, this is due to blocking sound effects
+// TODO find a way to make sound without blocking to speed up ticks
 #define TICK_MICROS 1000
-
-#define INITIAL_DIFFICULTY 100   //The initial difficulty in 'ticks per snake move'
 
 //Initial snake size
 #define INITIAL_SNAKE_LEN 5
@@ -27,25 +31,23 @@
 #define STATE_PAUSED 3
 #define STATE_ENDGAME 4
 
-
-
-
-
 class Snakie {
   private:
-    bool _debug_mode;         // Sets debug mode
-    bool _state_drawn;         //Some states only want to draw once - they can use this to track that
-    uint8_t _currentState;    // Current Game State
-    uint8_t _appleX;          // Current apple X Coordinate
-    uint8_t _appleY;          // Current apple Y Coordinate
-    uint8_t _tickCount;       // Tick count since snake last moved
-    Lcd *_lcd;                // The screen
-    Snake *_snake;            // Our snake
-    Button *_left;            // Left Button
-    Button *_right;           // Right Button
-    Button *_start;           // Start Button
-    byte _speaker;            // Speaker output pin
-    Pause *_pause;              // For fun!
+    bool _debug_mode;           // Sets debug mode
+    bool _state_drawn;          //Some states only want to draw once - they can use this to track that
+    uint8_t _currentState;      // Current Game State
+    uint8_t _appleX;            // Current apple X Coordinate
+    uint8_t _appleY;            // Current apple Y Coordinate
+    Lcd *_lcd;                  // The screen
+    Snake *_snake;              // Our snake
+    Button *_left;              // Left Button
+    Button *_right;             // Right Button
+    Button *_start;             // Start Button
+    byte _speaker;              // Speaker output pin
+    MusicPlayer *_musicPlayer;  // For fun!
+    int _score;                 // Current Score
+    long _lastMove;             // The time elapsed since the snake last moved
+    bool _snakeMelHigh = true;  // Whether the next move tone is aa high tone or a low tone
 
     /* Place the apple somewhere */
     void _placeApple();
@@ -66,6 +68,9 @@ class Snakie {
 
     /* The game ended */
     void _stateEndgame();
+
+    /* Returns the 'period' of a a tick for the current difficulty level */
+    int _difficultyDelay();
 
   public:
     /* Constructor - requires a screen and some buttons */

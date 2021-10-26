@@ -1,12 +1,19 @@
-/*
-  Button.h - A library for managing button presses in the snake game
+/**
+   Snakie McSnakeFace - Button Handler (header) Version 1.0
+   Author: Chris Noldus, Copyright 2021
+   Licence: CC w/attribution
+
+   Used to keep track of button presses - it only counts a press as a transition from LOW to HIGH
+   Where it is held HIGH for at least DEBOUNCE_DELAY milliseconds.
 */
 
 #ifndef Button_h
 #define Button_h
 #include "Arduino.h"
 
-const long DEBOUNCE_DELAY = 10; //Minimum period change has to be stable before it is considered stable
+//Minimum period change has to be stable before it is considered stable
+//I ave found that debouncing has to big an impact on responsiveness, so set to 0
+const long DEBOUNCE_DELAY = 0; 
 
 class Button {
   private:

@@ -1,3 +1,8 @@
+/**
+   Snakie McSnakeFace - Snake (impl) Version 1.0
+   Author: Chris Noldus, Copyright 2021
+   Licence: CC w/attribution
+*/
 #include "Snake.h"
 
 Segment::Segment(uint8_t xPos, uint8_t yPos) {
@@ -15,7 +20,6 @@ void Segment::removeTail() {
   }
 }
 
-//Create a new snake at the given coordinates heading in the given direction
 Snake::Snake(uint8_t initialX, uint8_t initialY, uint8_t initialLen, uint8_t initialDir) {
   head = new Segment(initialX, initialY);
   snakeSize = 1;
@@ -68,9 +72,7 @@ boolean Snake::grow() {
   Segment *newHead = new Segment(newX, newY);
   newHead->next = head;
   head = newHead;
-
   snakeSize++;
-
   return true;
 }
 
@@ -79,13 +81,10 @@ void Snake::removeTail() {
   snakeSize--;
 }
 
-//returns true if some part of the snake is at the given coordinate, otherwise false
 boolean Snake::contains(uint8_t x, uint8_t y) {
   Segment *cur = head;
   while (cur != NULL) {
-    //Serial.print("checking segment at "); Serial.print(cur->x); Serial.print(","); Serial.print(cur->y);
     if (cur->x == x &&  cur->y == y) {
-      //Serial.println("...COLLIDE");
       return true;
     } else {
       //Serial.println("...OK");
@@ -116,3 +115,4 @@ void Snake::destruct() {
   delete cur->next;
   delete cur;
  }
+ 

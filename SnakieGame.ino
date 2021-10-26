@@ -1,11 +1,12 @@
 /**
-   Snakie Mc SnakeFace Version 1.0
+   Snakie McSnakeFace Version 1.0
    Author: Chris Noldus, Copyright 2021
    Licence: CC w/attribution
 
-   Simple program intended to run on an ATmega328P microcontroller usinf
+   Simple program intended to run on an ATmega328P microcontroller using
         PCD8544 LCD Screen
         3 Push Buttons
+        1 8 ohm speaker
 
    Configure the digital pin connections below
 */
@@ -20,7 +21,7 @@
 #define LCD_HEIGHT 48
 #endif
 
-//Set true if you want verbose outpout on the monitor
+//Set true if you want verbose outpout on the monitor - note this will dramatically slow the game down
 #define DEBUG_MODE false
 
 //LCD Pin Connections
@@ -35,13 +36,16 @@
 #define RIGHT_BUTTON_PIN 10
 #define START_BUTTON_PIN 12
 
+//Speaker connection
 #define SPEAKER_OUT 11
 
-Snakie* snakie;   //Game class
+//Game class
+Snakie* snakie; 
 
 void setup() {
   Serial.begin(9600);
-  
+
+  //Configure hardware
   Lcd *lcd = new Lcd(LCD_SCLK_PIN, LCD_SDIN_PIN, LCD_DC_PIN, LCD_RES_PIN, LCD_SCE_PIN);
   Button *leftButton = new Button(LEFT_BUTTON_PIN, DEBUG_MODE);
   Button *rightButton = new Button(RIGHT_BUTTON_PIN, DEBUG_MODE);

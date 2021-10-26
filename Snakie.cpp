@@ -1,5 +1,11 @@
+/**
+   Snakie McSnakeFace - Snakie (impl) Version 1.0
+   Author: Chris Noldus, Copyright 2021
+   Licence: CC w/attribution
+*/
 #include "Arduino.h"
 #include "Snakie.h"
+#include "Music.h"
 
 Snakie::Snakie(Lcd *lcd, Button *left, Button *right, Button *start, byte speaker, bool debug_mode) {
   _lcd = lcd;
@@ -9,13 +15,12 @@ Snakie::Snakie(Lcd *lcd, Button *left, Button *right, Button *start, byte speake
   _currentState = STATE_LOADING;
   _debug_mode = debug_mode;
   _speaker = speaker;
-  _pause = new Pause(_speaker);
-
 }
 
 void Snakie::tick() {
    long tickStart = micros();
 
+   //Check IO
    _left->check();
    _right->check();
    _start->check();
@@ -30,7 +35,8 @@ void Snakie::tick() {
   
 
   //extend this tick if needed
-  int tickDelay = max(0, TICK_MICROS - (micros() - tickStart));
+  long tickTime = (micros() - tickStart);
+  long tickDelay = max(0, TICK_MICROS - (tickTime));
   delayMicroseconds(tickDelay);
 }
 
@@ -67,7 +73,8 @@ void Snakie::_stateLoading() {
   if (_debug_mode) Serial.println("STATE: Loading");
   _lcd->printImageFromFlash(loadscreen);
   _currentState =STATE_WAITING;
-  // Play 1-up sound
+  
+  // Play start-up sound TODO -> use new Song/Music interface
   tone(_speaker,NOTE_E6,125);
   delay(130);
   tone(_speaker,NOTE_G6,125);
@@ -88,11 +95,11 @@ void Snakie::_stateWaiting() {
   //see if start button pressed
   if (_start->isPressed()) {
     
-    //initialise game: clear screen, create new snake and apple.
+    //Initialise game: clear screen, create new snake and apple.
     
     //TODO - random start & direction
-    int curX = 40;
-    int curY = 24;
+    uint8_t curX = 40;
+    uint8_t curY = 24;
 
     //Create snake
     _snake = new Snake(curX, curY, INITIAL_SNAKE_LEN, SNAKE_DIR_RIGHT);
@@ -105,30 +112,16 @@ void Snakie::_stateWaiting() {
 
     if (_debug_mode) Serial.println("STATE: Tranistion to running");
     _currentState = STATE_RUNNING;
-    _tickCount = 0;
+    _lastMove = 0;
 
     //Update display
     _lcd->displayGameState(_snake, _appleX, _appleY);
   }
 }
 
-bool snakeMelHigh = true;
-
 void Snakie::_stateRunning() {
   _state_drawn = false;
-  _tickCount++;
-
-//  // notes in the melody:
-//    int snakeMelody[] = {
-//      snakeMelHigh ? NOTE_C4 : NOTE_G3
-//    };
-//    
-//    // note durations: 4 = quarter note, 8 = eighth note, etc.:
-//    int snakeDurations[] = {
-//      128
-//    };
-//
-//  playSound(snakeMelody, snakeDurations);
+  
   //First, handle IO
   
   //If the start button has been pressed, move to the pause state
@@ -137,34 +130,33 @@ void Snakie::_stateRunning() {
     _currentState = STATE_PAUSED;
     return;
   }
+  
   //If left has been pressed, turn left
   if (_left->isPressed()) {
     if (_debug_mode) Serial.println("LEFT Pressed");
     _snake->turnLeft();
   }
+  
   //If right has been pressed, turn right
   if (_right->isPressed()) {
     if (_debug_mode) Serial.println("RIGHT Pressed");
     _snake->turnRight();
   }
 
-  // Difficulty formula - each 'segment' on the snake should reduce the number of ticks by one
-  // If the snake is > 100 then no delay
-  //TODO instead of using tick counts, keep track of elapsed time - will be much simpler
-  //check if snake should move
-  //  if (snake->size() >= 100 || (INITIAL_DIFFICULTY - snake->size()) <= tickCount) {
-  if (_tickCount > 100) {
+  //Check if enough time has passed since we last moved
+  long elapsed = millis() - _lastMove;
+  if (elapsed > _difficultyDelay()) {
   
     if (_debug_mode) {
       Serial.println("STATE: RUNNING");
-      Serial.print("Tickcount: "); Serial.println(_tickCount,DEC);
     }
-    _tickCount = 0;
+
     //have we hit ourselves or gone off screen?
     if (!_snake->grow()) {
       if (_debug_mode) Serial.println("OFF SCREEN OR SELF COLLISION!");
       _currentState = STATE_ENDGAME;
     }
+    
     //Did we find an apple?
     if (_snake->contains(_appleX, _appleY)) {
       if (_debug_mode) Serial.println("Yummy apple!");
@@ -176,18 +168,18 @@ void Snakie::_stateRunning() {
       tone(_speaker, NOTE_C7, 50);
     } else {
       _snake->removeTail();
-        if (snakeMelHigh) 
+        if (_snakeMelHigh) 
       tone(_speaker, NOTE_C4, 10);
     else
       tone(_speaker, NOTE_C5, 10);
-    snakeMelHigh = !snakeMelHigh;
+    _snakeMelHigh = !_snakeMelHigh;
     }
+    
     //Update display
     _lcd->displayGameState(_snake, _appleX, _appleY);
+    _lastMove = millis();
   }
 }
-
-
 
 void Snakie::_statePaused() {
   if (_debug_mode) Serial.println("STATE: PAUSED");
@@ -196,14 +188,18 @@ void Snakie::_statePaused() {
     _lcd->clear();
     _lcd->printString(2, " GAME  PAUSED ");
     _state_drawn = true;
+    _musicPlayer = new MusicPlayer(_speaker, pauseSong);
+    _musicPlayer->reset();
   }
 
-  _pause->step();
+  _musicPlayer->step();
 
   //If the start button has been pressed, move to the pause state
   if (_start->isPressed()) {
     if (_debug_mode) Serial.println("START Pressed, pausing game");
     _currentState = STATE_RUNNING;
+    delete _musicPlayer;
+    _musicPlayer = NULL;
     _state_drawn = false;
     return;
   }
@@ -218,42 +214,44 @@ void Snakie::_stateEndgame() {
 
     const char *message = "score:        ";
     sprintf(message + 7*sizeof(char), "%d",  + _snake->snakeSize);
-//    //Create the text as a string
-//    String text = 
-//    message = text.toCharArray();
-    //message[13] = '\0'; //ensure its null terminated
     _lcd->printString(1, "  GAME  OVER  ");
     _lcd->printString(3, message);
     _state_drawn=true;
 
+
+    //TODO - use new music class 
     // notes in the melody:
     int gameOverMelody[] = {
       NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4
     };
-
-
-    
     // note durations: 4 = quarter note, 8 = eighth note, etc.:
     int gameOverDurations[] = {
       4, 8, 8, 4, 4, 4, 4, 4
     };
-
-
     playSound(gameOverMelody, gameOverDurations,8);
 
     _snake->destruct();
     delete _snake;
     _snake = NULL;
   }
-  
+
+  //Go back to the home screen
   if (_start->isPressed()) {
-    if (_debug_mode) Serial.println("START Pressed, pausing game");
     _currentState = STATE_LOADING;
     _state_drawn=false;
     return;
   }
 }
 
+
+int Snakie::_difficultyDelay() {
+  //100ms - difficulty, or 0
+  if (_snake->snakeSize > 99) return 1;
+  return 100 - _snake->snakeSize;
+  
+}
+
+//TODO Replace with Music class
 void Snakie::playSound(int melody[], int durations[], int len) {
 
 for (int thisNote = 0; thisNote < len; thisNote++) {

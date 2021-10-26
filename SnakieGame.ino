@@ -24,28 +24,32 @@
 #define DEBUG_MODE false
 
 //LCD Pin Connections
-#define LCD_SCLK_PIN 4
-#define LCD_SDIN_PIN 5
-#define LCD_DC_PIN 6
-#define LCD_RES_PIN 7
-#define LCD_SCE_PIN 8
+#define LCD_SCLK_PIN 5
+#define LCD_SDIN_PIN 6
+#define LCD_DC_PIN 7
+#define LCD_RES_PIN 8
+#define LCD_SCE_PIN 3
 
 //Button Pin Connections
-#define LEFT_BUTTON_PIN 10
-#define RIGHT_BUTTON_PIN 11
-#define START_BUTTON_PIN 9
+#define LEFT_BUTTON_PIN 9
+#define RIGHT_BUTTON_PIN 10
+#define START_BUTTON_PIN 12
+
+#define SPEAKER_OUT 11
 
 Snakie* snakie;   //Game class
 
 void setup() {
   Serial.begin(9600);
-
+  
   Lcd *lcd = new Lcd(LCD_SCLK_PIN, LCD_SDIN_PIN, LCD_DC_PIN, LCD_RES_PIN, LCD_SCE_PIN);
   Button *leftButton = new Button(LEFT_BUTTON_PIN, DEBUG_MODE);
   Button *rightButton = new Button(RIGHT_BUTTON_PIN, DEBUG_MODE);
   Button *startButton = new Button(START_BUTTON_PIN, DEBUG_MODE);
 
-  snakie = new Snakie(lcd, leftButton, rightButton, startButton, DEBUG_MODE);
+  snakie = new Snakie(lcd, leftButton, rightButton, startButton, SPEAKER_OUT, DEBUG_MODE);
+
+  
 }
 
 void loop() {

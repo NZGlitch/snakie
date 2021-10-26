@@ -6,7 +6,7 @@
 #define Button_h
 #include "Arduino.h"
 
-const long DEBOUNCE_DELAY = 50; //Minimum period change has to be stable before it is considered stable
+const long DEBOUNCE_DELAY = 10; //Minimum period change has to be stable before it is considered stable
 
 class Button {
   private:

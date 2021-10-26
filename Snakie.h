@@ -8,6 +8,8 @@
 #include "Lcd.h"
 #include "Button.h"
 #include "Snake.h"
+#include "pitches.h"
+#include "Pause.h"
 
 // The target tick time in microseconds - the program will try as much as possible to keep
 // ticks to this exact length, providing consitency in snake speed during the game
@@ -26,6 +28,9 @@
 #define STATE_ENDGAME 4
 
 
+
+
+
 class Snakie {
   private:
     bool _debug_mode;         // Sets debug mode
@@ -39,6 +44,8 @@ class Snakie {
     Button *_left;            // Left Button
     Button *_right;           // Right Button
     Button *_start;           // Start Button
+    byte _speaker;            // Speaker output pin
+    Pause *_pause;              // For fun!
 
     /* Place the apple somewhere */
     void _placeApple();
@@ -62,7 +69,7 @@ class Snakie {
 
   public:
     /* Constructor - requires a screen and some buttons */
-    Snakie(Lcd *lcd, Button *left, Button *right, Button *start, bool debug_mode);
+    Snakie(Lcd *lcd, Button *left, Button *right, Button *start, byte speaker_out, bool debug_mode);
 
     /* Execute one game tick */
     void tick();
@@ -78,6 +85,8 @@ class Snakie {
 
     /* Return the current Snake */
     Snake* getSnake();
+
+    void playSound(int melody[], int durations[], int len);
 };
 
 #endif

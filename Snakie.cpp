@@ -1,13 +1,16 @@
 #include "Arduino.h"
 #include "Snakie.h"
 
-Snakie::Snakie(Lcd *lcd, Button *left, Button *right, Button *start, bool debug_mode) {
+Snakie::Snakie(Lcd *lcd, Button *left, Button *right, Button *start, byte speaker, bool debug_mode) {
   _lcd = lcd;
   _left = left;
   _right = right;
   _start = start;
   _currentState = STATE_LOADING;
   _debug_mode = debug_mode;
+  _speaker = speaker;
+  _pause = new Pause(_speaker);
+
 }
 
 void Snakie::tick() {
@@ -24,6 +27,7 @@ void Snakie::tick() {
     case STATE_PAUSED:  _statePaused();  break;
     case STATE_ENDGAME: _stateEndgame(); break;
   }
+  
 
   //extend this tick if needed
   int tickDelay = max(0, TICK_MICROS - (micros() - tickStart));
@@ -63,6 +67,20 @@ void Snakie::_stateLoading() {
   if (_debug_mode) Serial.println("STATE: Loading");
   _lcd->printImageFromFlash(loadscreen);
   _currentState =STATE_WAITING;
+  // Play 1-up sound
+  tone(_speaker,NOTE_E6,125);
+  delay(130);
+  tone(_speaker,NOTE_G6,125);
+  delay(130);
+  tone(_speaker,NOTE_E7,125);
+  delay(130);
+  tone(_speaker,NOTE_C7,125);
+  delay(130);
+  tone(_speaker,NOTE_D7,125);
+  delay(130);
+  tone(_speaker,NOTE_G7,125);
+  delay(125);
+  noTone(_speaker);
 }
 
 void Snakie::_stateWaiting() {
@@ -94,10 +112,23 @@ void Snakie::_stateWaiting() {
   }
 }
 
+bool snakeMelHigh = true;
+
 void Snakie::_stateRunning() {
   _state_drawn = false;
   _tickCount++;
-  
+
+//  // notes in the melody:
+//    int snakeMelody[] = {
+//      snakeMelHigh ? NOTE_C4 : NOTE_G3
+//    };
+//    
+//    // note durations: 4 = quarter note, 8 = eighth note, etc.:
+//    int snakeDurations[] = {
+//      128
+//    };
+//
+//  playSound(snakeMelody, snakeDurations);
   //First, handle IO
   
   //If the start button has been pressed, move to the pause state
@@ -123,6 +154,7 @@ void Snakie::_stateRunning() {
   //check if snake should move
   //  if (snake->size() >= 100 || (INITIAL_DIFFICULTY - snake->size()) <= tickCount) {
   if (_tickCount > 100) {
+  
     if (_debug_mode) {
       Serial.println("STATE: RUNNING");
       Serial.print("Tickcount: "); Serial.println(_tickCount,DEC);
@@ -137,8 +169,18 @@ void Snakie::_stateRunning() {
     if (_snake->contains(_appleX, _appleY)) {
       if (_debug_mode) Serial.println("Yummy apple!");
       _placeApple();
+      tone(_speaker, NOTE_A7, 50);
+      delay(50);
+      tone(_speaker, NOTE_B7, 50);
+      delay(50);
+      tone(_speaker, NOTE_C7, 50);
     } else {
       _snake->removeTail();
+        if (snakeMelHigh) 
+      tone(_speaker, NOTE_C4, 10);
+    else
+      tone(_speaker, NOTE_C5, 10);
+    snakeMelHigh = !snakeMelHigh;
     }
     //Update display
     _lcd->displayGameState(_snake, _appleX, _appleY);
@@ -155,6 +197,8 @@ void Snakie::_statePaused() {
     _lcd->printString(2, " GAME  PAUSED ");
     _state_drawn = true;
   }
+
+  _pause->step();
 
   //If the start button has been pressed, move to the pause state
   if (_start->isPressed()) {
@@ -182,6 +226,21 @@ void Snakie::_stateEndgame() {
     _lcd->printString(3, message);
     _state_drawn=true;
 
+    // notes in the melody:
+    int gameOverMelody[] = {
+      NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4
+    };
+
+
+    
+    // note durations: 4 = quarter note, 8 = eighth note, etc.:
+    int gameOverDurations[] = {
+      4, 8, 8, 4, 4, 4, 4, 4
+    };
+
+
+    playSound(gameOverMelody, gameOverDurations,8);
+
     _snake->destruct();
     delete _snake;
     _snake = NULL;
@@ -192,5 +251,23 @@ void Snakie::_stateEndgame() {
     _currentState = STATE_LOADING;
     _state_drawn=false;
     return;
+  }
+}
+
+void Snakie::playSound(int melody[], int durations[], int len) {
+
+for (int thisNote = 0; thisNote < len; thisNote++) {
+
+    // to calculate the note duration, take one second divided by the note type.
+    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
+    int noteDuration = 1000 / durations[thisNote];
+    tone(_speaker, melody[thisNote], noteDuration);
+
+    // to distinguish the notes, set a minimum time between them.
+    // the note's duration + 30% seems to work well:
+    int pauseBetweenNotes = noteDuration * 1.30;
+    delay(pauseBetweenNotes);
+    // stop the tone playing:
+    noTone(_speaker);
   }
 }

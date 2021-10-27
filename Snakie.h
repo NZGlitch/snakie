@@ -17,15 +17,6 @@
 #include "HungerMeter.h"
 #include "Constants.h"
 
-// The target tick time in microseconds - the program will try as much as possible to keep
-// ticks to this exact length, providing consitency in snake speed during the game
-// NOTE - it looks like the current tick length is 25ms, this is due to blocking sound effects
-// TODO find a way to make sound without blocking to speed up ticks
-#define TICK_MICROS 1000
-
-//Initial snake size
-#define INITIAL_SNAKE_LEN 5
-
 //Current state of the game
 #define STATE_LOADING 0
 #define STATE_WAITING 1
@@ -35,10 +26,9 @@
  
 class Snakie {
   private:
-    
-    
+
     bool _debug_mode;           // Sets debug mode
-    bool _state_drawn;          //Some states only want to draw once - they can use this to track that
+    bool _state_drawn;          // Some states only want to draw once - they can use this to track that
     uint8_t _currentState;      // Current Game State
     uint8_t _appleX;            // Current apple X Coordinate
     uint8_t _appleY;            // Current apple Y Coordinate
@@ -58,6 +48,9 @@ class Snakie {
     /* Place the apple somewhere */
     void _placeApple();
 
+    /* Returns the 'period' of a a tick for the current difficulty level */
+    int _difficultyDelay();
+
     //Internal state methods
 
     /* Display the initial screen */
@@ -73,10 +66,7 @@ class Snakie {
     void _statePaused();
 
     /* The game ended */
-    void _stateEndgame();
-
-    /* Returns the 'period' of a a tick for the current difficulty level */
-    int _difficultyDelay();
+    void _stateEndgame(); 
 
   public:
     /* Constructor - requires a screen and some buttons */

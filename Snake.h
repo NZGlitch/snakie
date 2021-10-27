@@ -12,11 +12,6 @@
 #include "Arduino.h"
 #include "Constants.h"
 
-#ifndef LCD_DIMENSIONS
-#define LCD_WIDTH 84
-#define LCD_HEIGHT 48
-#endif
-
 /**
  * Snake directions, set up so a right turn can be:
  *  newdir = (curDir - 1) %r 4

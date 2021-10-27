@@ -242,6 +242,8 @@ void Snakie::_stateEndgame() {
 
   if (!_state_drawn) {
     _lcd->clear();
+    _hunger->setHunger(0);
+    _hunger->tick();
 
     char *deathText = "              ";
     switch (_deathReason) {
@@ -286,9 +288,9 @@ void Snakie::_stateEndgame() {
 
 
 int Snakie::_difficultyDelay() {
-  //100ms - difficulty, or 0
-  if (_snake->snakeSize > 99) return 1;
-  return 100 - _snake->snakeSize;
+  //100ms - difficulty, or 0 - this isnt working well as tick time is to slow due to audio
+  if (_snake->snakeSize > 49) return 1;
+  return 100 - 2*(_snake->snakeSize);
 
 }
 

@@ -55,8 +55,6 @@ void setup() {
   HungerMeter *hunger = new HungerMeter(RED_HUNGER, ORANGE1_HUNGER, ORANGE2_HUNGER, GREEN_HUNGER);
 
   snakie = new Snakie(lcd, leftButton, rightButton, startButton, SPEAKER_OUT, hunger, DEBUG_MODE);
-
-  
 }
 
 void loop() {

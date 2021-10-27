@@ -3,7 +3,7 @@
    Author: ??
    Licence: ??
 
-   Scraped form the internet somewhere - defines frequencies for various notes.
+   Scraped from: https://gist.github.com/mikeputnam/2820675
 */
 #ifndef Pitches_h
 #define Pitches_h

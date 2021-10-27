@@ -31,6 +31,17 @@ class HungerMeter {
 
     uint8_t _currentHunger;
 
+    long _lastBlinkChange;
+    boolean _blinkState;
+
+
+    //Helper method writes all 4 lights at once
+    void writeLights(byte red, byte o1, byte o2, byte grn);
+
+    //Helper method handles blinking
+    void blink(byte pin, byte blinkLevel);
+    
+
   public:
     //Constructor - sets the size of the HungerMeter, and pins
     HungerMeter(byte red_pin, byte orange1_pin, byte orange2_pin, byte green_pin);

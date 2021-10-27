@@ -21,7 +21,7 @@ MusicPlayer::MusicPlayer(byte speakerPin, Song *song) {
 void MusicPlayer::step() {
   uint16_t note = pgm_read_word(_song->melody + _index );
   byte rhythm = pgm_read_byte(_song->rhythm + _index);    
-  uint8_t noteLength = beatLength * rhythm;
+  uint16_t noteLength = beatLength * rhythm;
   
   if (note > 0) {
     tone(_speaker, note, noteLength);

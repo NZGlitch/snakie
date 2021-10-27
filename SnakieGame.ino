@@ -15,6 +15,7 @@
 #include "Snakie.h"
 #include "Button.h"
 #include "Lcd.h"
+#include "HungerMeter.h"
 
 #ifndef LCD_DIMENSIONS
 #define LCD_WIDTH 84
@@ -39,6 +40,12 @@
 //Speaker connection
 #define SPEAKER_OUT 11
 
+//LED connections
+#define RED_HUNGER A1
+#define ORANGE1_HUNGER A2
+#define ORANGE2_HUNGER A3
+#define GREEN_HUNGER A4
+
 //Game class
 Snakie* snakie; 
 
@@ -50,8 +57,9 @@ void setup() {
   Button *leftButton = new Button(LEFT_BUTTON_PIN, DEBUG_MODE);
   Button *rightButton = new Button(RIGHT_BUTTON_PIN, DEBUG_MODE);
   Button *startButton = new Button(START_BUTTON_PIN, DEBUG_MODE);
+  HungerMeter *hunger = new HungerMeter(RED_HUNGER, ORANGE1_HUNGER, ORANGE2_HUNGER, GREEN_HUNGER);
 
-  snakie = new Snakie(lcd, leftButton, rightButton, startButton, SPEAKER_OUT, DEBUG_MODE);
+  snakie = new Snakie(lcd, leftButton, rightButton, startButton, SPEAKER_OUT, hunger, DEBUG_MODE);
 
   
 }

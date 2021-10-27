@@ -52,19 +52,19 @@ void Snake::turnRight() {
   currentDir = (currentDir + 1) % 4;
 }
 
-boolean Snake::grow() {
+short Snake::grow() {
   //If we are left or right, then dx: LEFT = 0 - 1 = -1, RIGHT = 2 - 1 = 1
   uint8_t newX = head->x + (currentDir % 2 == 0 ? currentDir - 1 : 0); 
   //If we are up or down, then dy: UP = 1 - 2 = -1, DOWN = 3 - 2 = 1
   uint8_t newY = head->y + (currentDir % 2 == 1 ? currentDir - 2 : 0);
 
   //check to see if we go out of bounds
-  if (newX == 0 || newY == 0 || newX == (LCD_WIDTH - 1) || newY == (LCD_HEIGHT - 1)) return false;
+  if (newX == 0 || newY == 0 || newX == (LCD_WIDTH - 1) || newY == (LCD_HEIGHT - 1)) return DEATH_WALL;
 
   //check to see if it collides with any other part of the snake
   Segment *cur = head;
   while (cur != NULL) {
-    if (cur->x == newX && cur->y == newY) return false;
+    if (cur->x == newX && cur->y == newY) return DEATH_SELF;
     cur = cur->next;
   }
 
@@ -73,7 +73,7 @@ boolean Snake::grow() {
   newHead->next = head;
   head = newHead;
   snakeSize++;
-  return true;
+  return DEATH_ALIVE;
 }
 
 void Snake::removeTail() {

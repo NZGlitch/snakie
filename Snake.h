@@ -10,6 +10,7 @@
 #define Snake_h
 
 #include "Arduino.h"
+#include "Constants.h"
 
 #ifndef LCD_DIMENSIONS
 #define LCD_WIDTH 84
@@ -65,8 +66,8 @@ class Snake {
     void turnRight();
 
     // grow the snake 1 unit in the current direction
-    // returns true if ok, false if growing would cause a self 'collision'
-    boolean grow();
+    // returns 0 if OK, 1 if collided with wall, 2 if collided with self
+    short grow();
 
     //remove the last segment
     void removeTail();

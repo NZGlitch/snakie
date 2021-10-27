@@ -14,6 +14,8 @@
 #include "Snake.h"
 #include "Pitches.h"
 #include "MusicPlayer.h"
+#include "HungerMeter.h"
+#include "Constants.h"
 
 // The target tick time in microseconds - the program will try as much as possible to keep
 // ticks to this exact length, providing consitency in snake speed during the game
@@ -30,9 +32,11 @@
 #define STATE_RUNNING 2
 #define STATE_PAUSED 3
 #define STATE_ENDGAME 4
-
+ 
 class Snakie {
   private:
+    
+    
     bool _debug_mode;           // Sets debug mode
     bool _state_drawn;          //Some states only want to draw once - they can use this to track that
     uint8_t _currentState;      // Current Game State
@@ -45,9 +49,11 @@ class Snakie {
     Button *_start;             // Start Button
     byte _speaker;              // Speaker output pin
     MusicPlayer *_musicPlayer;  // For fun!
-    int _score;                 // Current Score
+    uint32_t _score;            // Current Score
     long _lastMove;             // The time elapsed since the snake last moved
     bool _snakeMelHigh = true;  // Whether the next move tone is aa high tone or a low tone
+    HungerMeter *_hunger;       // Keep track of hunger
+    short _deathReason;         //Actual reason game ended     
 
     /* Place the apple somewhere */
     void _placeApple();
@@ -74,7 +80,7 @@ class Snakie {
 
   public:
     /* Constructor - requires a screen and some buttons */
-    Snakie(Lcd *lcd, Button *left, Button *right, Button *start, byte speaker_out, bool debug_mode);
+    Snakie(Lcd *lcd, Button *left, Button *right, Button *start, byte speaker_out, HungerMeter *hunger, bool debug_mode);
 
     /* Execute one game tick */
     void tick();

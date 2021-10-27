@@ -12,11 +12,7 @@
 #include "Arduino.h"
 #include "Snake.h"
 #include "Glyphs.h"
-
-#ifndef LCD_DIMENSIONS
-#define LCD_WIDTH 84
-#define LCD_HEIGHT 48
-#endif
+#include "Constants.h"
 
 const uint8_t PCD8544_CMD = LOW;
 const uint8_t PCD8544_DATA = HIGH;

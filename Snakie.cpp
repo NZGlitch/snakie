@@ -159,7 +159,7 @@ void Snakie::_stateRunning() {
   long elapsed = millis() - _lastMove;
   if (elapsed > _difficultyDelay()) {
     //Get some points for making it this far!
-    _score = _score + _snake->snakeSize;
+    _score = _score + ((int32_t)_snake->snakeSize);
 
     if (_debug_mode) {
       Serial.println("STATE: RUNNING");
@@ -185,7 +185,7 @@ void Snakie::_stateRunning() {
       _placeApple();
 
       //Add hunger bar to score - the bigger you are, the more points you get
-      _score = _score + (_hunger->getHunger() * _snake->snakeSize);
+      _score = _score + (int32_t)((_hunger->getHunger() * _snake->snakeSize));
       
       _hunger->setHunger(MAX_HUNGER);
       tone(_speaker, NOTE_A7, 50);

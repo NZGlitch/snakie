@@ -18,10 +18,8 @@
 
 #ifndef HungerMeter_h
 #define HungerMeter_h
-
 #include "Arduino.h"
-
-#define MAX_HUNGER 150
+#include "Constants.h"
 
 class HungerMeter {
   private:

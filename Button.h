@@ -10,10 +10,7 @@
 #ifndef Button_h
 #define Button_h
 #include "Arduino.h"
-
-//Minimum period change has to be stable before it is considered stable
-//I ave found that debouncing has to big an impact on responsiveness, so set to 0
-const long DEBOUNCE_DELAY = 0; 
+#include "Constants.h"
 
 class Button {
   private:

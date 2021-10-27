@@ -17,11 +17,6 @@
 #include "Lcd.h"
 #include "HungerMeter.h"
 
-#ifndef LCD_DIMENSIONS
-#define LCD_WIDTH 84
-#define LCD_HEIGHT 48
-#endif
-
 //Set true if you want verbose outpout on the monitor - note this will dramatically slow the game down
 #define DEBUG_MODE false
 

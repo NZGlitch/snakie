@@ -254,7 +254,7 @@ void Snakie::_stateEndgame() {
     }
     int scoreLen = (int) (log10(_score) +1);
     char *scoreVal = "Score:        ";
-    sprintf(scoreVal+((14-scoreLen)*sizeof(char)), "%d",  + _score);
+    sprintf(scoreVal+((14-scoreLen)*sizeof(char)), "%u",  + _score);
     
     _lcd->printString(1, "  GAME  OVER  ");
     _lcd->printString(2, deathText);

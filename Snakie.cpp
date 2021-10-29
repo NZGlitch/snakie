@@ -186,6 +186,7 @@ void Snakie::_stateRunning() {
 
       //Add hunger bar to score - the bigger you are, the more points you get
       _score = _score + (int32_t)((_hunger->getHunger() * _snake->snakeSize));
+      if (_score > 9999999L) _score = 9999999L;
       
       _hunger->setHunger(MAX_HUNGER);
       tone(_speaker, NOTE_A7, 50);
@@ -252,7 +253,8 @@ void Snakie::_stateEndgame() {
       case DEATH_HUNGER: deathText = constants::deathTextHunger; break;
       default: deathText = "Cosmic Chance!";
     }
-    int scoreLen = (int) (log10(_score) +1);
+
+    if (_score > 9999999L) _score = 9999999L;
     char scoreVal[14];
     sprintf(scoreVal, "Score: %7u",  + _score);
     
